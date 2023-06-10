@@ -1,42 +1,63 @@
-import axios from 'axios'
-import { useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function App() {
+const WeatherApp = () => {
+  const [city, setCity] = useState('');
+  const [weatherData, setWeatherData] = useState(null);
+  const apiKey = '0354faf712a141f9a04221630231006';
 
-  //const url =`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/London%2CUK?unitGroup=us&key=YG62GNRYM6CC9HTBJWWH3NW9G`
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`
+        );
+        setWeatherData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    if (city) {
+      fetchWeatherData();
+    }
+  }, [city, apiKey]);
+
+  const handleCityChange = (e) => {
+    setCity(e.target.value);
+  };
 
   return (
-    <>
-     <div className="app">
-
-      <div className="container">
-        <div className="top">
-          <div className="location">
-            <p>Dallas</p>
-          </div>
-          <div className="temp">
-            <h1>60ºF</h1>
-          </div>
-          <div className="description">
-            <p>Clouds</p>
-          </div>
-        </div>
-        <div className="bottom">
-          <div className="feels">
-            <p>60ºF</p>
-          </div>
-          <div className="humidity">
-            <p>20%</p>
-          </div>
-          <div className="wind">
-            12MPH
-          </div>
-        </div>
+    <div className='app'>
+      <h1>Weather App</h1>
+      <div className="search">
+      <input type="text" value={city} onChange={handleCityChange} placeholder="Enter location" />
       </div>
+      {weatherData && (
+        <div className='container'>
+          <div className="top">
+            <div className="location">
+              <h2>{weatherData.location.name}</h2>
+            </div>
+            <div className="temp">
+              <p className='temp_p'>{weatherData.current.temp_c}°C</p>
+            </div>
+            <div className="description">
+              <p>{weatherData.current.condition.text}</p>
+            </div>
+          </div>
+          <div className="bottom">
+            <div className="humidity">
+              <p><strong>Humidity:</strong><br />{weatherData.current.humidity}</p>
+            </div>
+            <div className="feels">
+              <p><strong>Feels like:</strong><br />{weatherData.current.feelslike_c}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-    </>
-  )
-}
+  );
+};
 
-export default App
+export default WeatherApp;
