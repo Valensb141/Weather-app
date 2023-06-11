@@ -55,6 +55,7 @@ const WeatherApp = () => {
             </div>
           </div>
         </div>
+        
       )}
     </div>
   );
